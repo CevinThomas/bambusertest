@@ -2,6 +2,8 @@ const agent = require('superagent');
 const asciify = require('asciify-image');
 const dogApi = require("./dogApi")
 
+// One thing I was thinking of doing was to get the users input from the Command line. Asking for example "What breed would you like?", and then user the input, map it to an address and the continue the program. But I figured it was over engineering the application.
+
 // I renamed the function to make it more clearer that it is for a specific breed now.
 // However, I still have the random breed image API address that can be supplied, which makes the function more generic. Something to think about
 
