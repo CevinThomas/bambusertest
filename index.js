@@ -1,27 +1,39 @@
 const agent = require('superagent');
 const asciify = require('asciify-image');
+const dogApi = require("./dogApi")
 
-const DOG_API = 'https://dog.ceo/api/breeds/image/random';
+// I renamed the function to make it more clearer that it is for a specific breed now.
+// However, I still have the random breed image API address that can be supplied, which makes the function more generic. Something to think about
 
-const getDogImageURL = async () => {
-  const { body: { message: dogUrl }} = await agent.get(DOG_API_URL);
-  return dogUrl;
+const getDogImageUrlFromSpecificBreed = async (url) => {
+  const { body: { message: dogImageUrl }} = await agent.get(url);
+  return dogImageUrl;
 };
 
 (async () => {
-  // Get a URL for a random image of a dog
-  const dogUrl = await getDogImageURL();
 
-  // Download the image
-  const { body: data } = await agent.get(dogUrl);
+  // I wanted to wrap the code in a try catch block in order to catch errors in case something happens with the connection or other types.
 
-  // Convert the image to ascii
-  const ascii = await asciify(data, {
-    fit: 'box',
-    width: 60,
-    height: 60,
-  });
+  try {
 
-  // Print the ascii
-  console.log(ascii);
+    // I went with creating a hash table where we can store specific URLS (for example pug). The other option was just to use a normal string as argument "pug". I used the hash table as it is easier to add on new address for future uses if the application wants to change the breed (instead of always looking into documentation directly). However, creating the hash table adds more memory usage to the application.
+
+    const dogImageUrl = await getDogImageUrlFromSpecificBreed(dogApi.PUG_ADDRESS);
+
+    const { body: data } = await agent.get(dogImageUrl);
+
+    const ascii = await asciify(data, {
+      fit: 'box',
+      width: 60,
+      height: 60,
+    });
+
+    console.log(ascii);
+
+  } catch ( e ) {
+    // Did some basic error checking. I broke the request to see what response I get back, and wanted to let the person know that we failed, and show the message if there is one, instead of having an error show up.
+    if (e.response.body.message) return console.log(`Program failed, this is message from server: ${e.response.body.message}`)
+    console.log(`Program failed, please make sure the breed is correct.`)
+
+  }
 })();
